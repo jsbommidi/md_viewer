@@ -1,4 +1,4 @@
-# Markdown Viewer
+# md-viewer
 
 A beautiful, GitHub-styled markdown viewer built with React. Preview your markdown files with real-time syntax highlighting and authentic GitHub styling.
 

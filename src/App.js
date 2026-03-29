@@ -7,7 +7,7 @@ import 'highlight.js/styles/github-dark.css';
 import './App.css';
 
 function App() {
-  const [markdown, setMarkdown] = useState(`# Welcome to Markdown Viewer
+  const [markdown, setMarkdown] = useState(`# Welcome to md-viewer
 
 ## Getting Started
 
@@ -76,7 +76,7 @@ Try uploading a markdown file or paste your own markdown content!
     <div className="App">
       <header className="app-header">
         <div className="header-content">
-          <h1>Markdown Viewer</h1>
+          <h1>md-viewer</h1>
           <p>GitHub-styled markdown preview</p>
         </div>
         <div className="header-controls">
