@@ -1,70 +1,128 @@
-# Getting Started with Create React App
+# 📝 Markdown Viewer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A beautiful, GitHub-styled markdown viewer built with React. Preview your markdown files with real-time syntax highlighting and authentic GitHub styling.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+✨ **GitHub-Flavored Markdown Support**
+- Tables
+- Task lists
+- Strikethrough
+- Autolinks
+- Full GFM compliance
 
-### `npm start`
+🎨 **Beautiful GitHub Dark Theme**
+- Authentic GitHub styling
+- Dark mode optimized
+- Responsive design
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+💻 **Syntax Highlighting**
+- 50+ language support
+- GitHub Dark theme
+- Line-by-line highlighting
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+⚡ **Real-Time Preview**
+- Live editor and preview panes
+- Side-by-side comparison
+- Instant updates
 
-### `npm test`
+📂 **File Upload**
+- Upload `.md` or `.txt` files
+- Quick file loading
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Getting Started
 
-### `npm run build`
+### Prerequisites
+- Node.js (v14 or higher)
+- npm
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Install dependencies:
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Running the App
 
-### `npm run eject`
+Start the development server:
+```bash
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The app will open at `http://localhost:3000`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Port Configuration:**
+- The default port is **3000** (configured in the `react-scripts` package, not hardcoded in your code)
+- To change the port, set the `PORT` environment variable:
+  ```bash
+  PORT=5000 npm start
+  ```
+- Or modify the `start` script in `package.json`:
+  ```json
+  "start": "PORT=5000 react-scripts start"
+  ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Building for Production
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Create an optimized production build:
+```bash
+npm run build
+```
 
-## Learn More
+## Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. **Write Markdown**: Type or paste markdown in the left editor pane
+2. **See Preview**: View the rendered output in the right preview pane with GitHub styling
+3. **Upload Files**: Click "📂 Upload File" to load `.md` or `.txt` files
+4. **Clear**: Click "🗑️ Clear" to reset the editor
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Technologies Used
 
-### Code Splitting
+- **React** - UI framework
+- **react-markdown** - Markdown parsing
+- **remark-gfm** - GitHub Flavored Markdown support
+- **rehype-highlight** - Syntax highlighting
+- **github-markdown-css** - Authentic GitHub styling
+- **highlight.js** - Code highlighting library
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Project Structure
 
-### Analyzing the Bundle Size
+```
+src/
+├── App.js          # Main component with editor and preview
+├── App.css         # Styling and layout
+├── index.js        # React entry point
+└── index.css       # Global styles
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Keyboard Shortcuts
 
-### Making a Progressive Web App
+- **Tab** in editor: Insert 2 spaces (for indentation)
+- **Ctrl/Cmd + A**: Select all text
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Tips
 
-### Advanced Configuration
+- Use triple backticks with language name for syntax highlighting:
+  ```javascript
+  console.log('Hello World');
+  ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Create tables with pipes and dashes:
+  ```
+  | Column 1 | Column 2 |
+  |----------|----------|
+  | Cell 1   | Cell 2   |
+  ```
 
-### Deployment
+- Create task lists with `- [ ]` and `- [x]`:
+  ```
+  - [x] Completed task
+  - [ ] Pending task
+  ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## License
 
-### `npm run build` fails to minify
+MIT License - feel free to use this project for any purpose.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Built with ❤️

@@ -1,38 +1,315 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  background-color: #0d1117;
+}
+
+.app-header {
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.App-link {
-  color: #61dafb;
+.header-content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #c9d1d9;
+  margin-bottom: 4px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.header-content p {
+  font-size: 14px;
+  color: #8b949e;
+}
+
+.header-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.file-upload-btn,
+.clear-btn,
+.toggle-btn {
+  padding: 8px 16px;
+  border: 1px solid #30363d;
+  background-color: #21262d;
+  color: #c9d1d9;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.file-upload-btn:hover,
+.clear-btn:hover,
+.toggle-btn:hover {
+  background-color: #30363d;
+  border-color: #8b949e;
+}
+
+.file-upload-btn input {
+  display: none;
+}
+
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  gap: 0;
+}
+
+.editor-section,
+.preview-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editor-section {
+  border-right: 1px solid #30363d;
+}
+
+.preview-section {
+  border-left: 1px solid #30363d;
+}
+
+.preview-section.fullwidth {
+  border-left: none;
+}
+
+.editor-section h2,
+.preview-section h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  background-color: #0d1117;
+  border-bottom: 1px solid #30363d;
+}
+
+.editor {
+  flex: 1;
+  padding: 16px;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  border: none;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+}
+
+.editor::placeholder {
+  color: #6e7681;
+}
+
+.preview-section {
+  overflow-y: auto;
+}
+
+.preview {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #0d1117;
+}
+
+/* GitHub Markdown Overrides */
+.preview.markdown-body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+
+.preview.markdown-body h1,
+.preview.markdown-body h2,
+.preview.markdown-body h3,
+.preview.markdown-body h4,
+.preview.markdown-body h5,
+.preview.markdown-body h6 {
+  color: #c9d1d9;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 10px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.preview.markdown-body h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.preview.markdown-body h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.preview.markdown-body h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.preview.markdown-body code {
+  background-color: #161b22;
+  border-radius: 6px;
+  padding: 0.2em 0.4em;
+  color: #e6edf3;
+  font-size: 85%;
+}
+
+.preview.markdown-body pre {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.preview.markdown-body pre code {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: #e6edf3;
+}
+
+.preview.markdown-body blockquote {
+  border-left: 3px solid #3b434b;
+  padding-left: 12px;
+  margin-left: 0;
+  color: #8b949e;
+}
+
+.preview.markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.preview.markdown-body table tr {
+  border-bottom: 1px solid #30363d;
+  background-color: #0d1117;
+}
+
+.preview.markdown-body table tr:nth-child(2n) {
+  background-color: #161b22;
+}
+
+.preview.markdown-body table th,
+.preview.markdown-body table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #30363d;
+}
+
+.preview.markdown-body table th {
+  background-color: #161b22;
+  font-weight: 600;
+  color: #c9d1d9;
+}
+
+.preview.markdown-body a {
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+.preview.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.preview.markdown-body ul,
+.preview.markdown-body ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.preview.markdown-body li {
+  margin-bottom: 4px;
+}
+
+.preview.markdown-body input[type='checkbox'] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
   }
-  to {
-    transform: rotate(360deg);
+
+  .editor-section,
+  .preview-section {
+    flex: 1;
   }
+
+  .editor-section {
+    border-right: none;
+    border-bottom: 1px solid #30363d;
+  }
+
+  .preview-section {
+    border-left: none;
+    border-top: 1px solid #30363d;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-controls {
+    width: 100%;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #0d1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #30363d;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #3b434b;
 }
