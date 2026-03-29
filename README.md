@@ -1,32 +1,32 @@
-# 📝 Markdown Viewer
+# Markdown Viewer
 
 A beautiful, GitHub-styled markdown viewer built with React. Preview your markdown files with real-time syntax highlighting and authentic GitHub styling.
 
 ## Features
 
-✨ **GitHub-Flavored Markdown Support**
+**GitHub-Flavored Markdown Support**
 - Tables
 - Task lists
 - Strikethrough
 - Autolinks
 - Full GFM compliance
 
-🎨 **Beautiful GitHub Dark Theme**
+**Beautiful GitHub Dark Theme**
 - Authentic GitHub styling
 - Dark mode optimized
 - Responsive design
 
-💻 **Syntax Highlighting**
+**Syntax Highlighting**
 - 50+ language support
 - GitHub Dark theme
 - Line-by-line highlighting
 
-⚡ **Real-Time Preview**
+**Real-Time Preview**
 - Live editor and preview panes
 - Side-by-side comparison
 - Instant updates
 
-📂 **File Upload**
+**File Upload**
 - Upload `.md` or `.txt` files
 - Quick file loading
 
@@ -74,8 +74,8 @@ npm run build
 
 1. **Write Markdown**: Type or paste markdown in the left editor pane
 2. **See Preview**: View the rendered output in the right preview pane with GitHub styling
-3. **Upload Files**: Click "📂 Upload File" to load `.md` or `.txt` files
-4. **Clear**: Click "🗑️ Clear" to reset the editor
+3. **Upload Files**: Click "Upload File" to load `.md` or `.txt` files
+4. **Clear**: Click "Clear" to reset the editor
 
 ## Technologies Used
 
@@ -124,5 +124,3 @@ src/
 ## License
 
 MIT License - feel free to use this project for any purpose.
-
-## Built with ❤️

@@ -11,15 +11,15 @@ function App() {
 
 ## Getting Started
 
-This is a **GitHub-styled** markdown viewer built with React. Try editing the text on the left to see the preview update in real-time!
+This is a GitHub-styled markdown viewer built with React. Try editing the text on the left to see the preview update in real-time!
 
 ### Features
 
-- ✨ GitHub-flavored markdown support
-- 🎨 Beautiful GitHub styling
-- 💻 Syntax highlighting for code blocks
-- 📊 Full table support
-- ✅ Task lists
+- GitHub-flavored markdown support
+- Beautiful GitHub styling
+- Syntax highlighting for code blocks
+- Full table support
+- Task lists
 
 ### Code Example
 
@@ -33,9 +33,9 @@ function hello() {
 
 | Feature | Status |
 |---------|--------|
-| Markdown | ✅ |
-| Tables | ✅ |
-| Code Highlighting | ✅ |
+| Markdown | Supported |
+| Tables | Supported |
+| Code Highlighting | Supported |
 
 ### Blockquote
 
@@ -76,19 +76,19 @@ Try uploading a markdown file or paste your own markdown content!
     <div className="App">
       <header className="app-header">
         <div className="header-content">
-          <h1>📝 Markdown Viewer</h1>
+          <h1>Markdown Viewer</h1>
           <p>GitHub-styled markdown preview</p>
         </div>
         <div className="header-controls">
           <label className="file-upload-btn">
-            📂 Upload File
+            Upload File
             <input type="file" accept=".md,.txt" onChange={handleFileUpload} />
           </label>
           <button className="toggle-btn" onClick={toggleEditor}>
-            {editorOpen ? '✏️ Hide Editor' : '✏️ Show Editor'}
+            {editorOpen ? 'Hide Editor' : 'Show Editor'}
           </button>
           <button className="clear-btn" onClick={handleClear}>
-            🗑️ Clear
+            Clear
           </button>
         </div>
       </header>
