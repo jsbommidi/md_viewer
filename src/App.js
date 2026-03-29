@@ -11,7 +11,7 @@ function App() {
 
 ## Getting Started
 
-This is a GitHub-styled markdown viewer built with React. Try editing the text on the left to see the preview update in real-time!
+This is a GitHub-styled markdown viewer built with React. Use **Show Editor** in the header to edit, or upload a markdown file.
 
 ### Features
 
@@ -51,7 +51,7 @@ function hello() {
 
 Try uploading a markdown file or paste your own markdown content!
   `);
-  const [editorOpen, setEditorOpen] = useState(true);
+  const [editorOpen, setEditorOpen] = useState(false);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];

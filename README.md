@@ -72,8 +72,8 @@ npm run build
 
 ## Usage
 
-1. **Write Markdown**: Type or paste markdown in the left editor pane
-2. **See Preview**: View the rendered output in the right preview pane with GitHub styling
+1. **Preview**: The app opens in preview-only mode. Click **Show Editor** to open the editor pane.
+2. **Write Markdown**: With the editor visible, type or paste markdown on the left; the preview updates on the right.
 3. **Upload Files**: Click "Upload File" to load `.md` or `.txt` files
 4. **Clear**: Click "Clear" to reset the editor
 
