@@ -50,17 +50,13 @@ Start the development server:
 npm start
 ```
 
-The app will open at `http://localhost:3000`
+The app will open at `http://localhost:16666`
 
 **Port Configuration:**
-- The default port is **3000** (configured in the `react-scripts` package, not hardcoded in your code)
-- To change the port, set the `PORT` environment variable:
-  ```bash
-  PORT=5000 npm start
-  ```
-- Or modify the `start` script in `package.json`:
+- The default port is **16666** (configured in `package.json`)
+- To change the port, modify the `start` script in `package.json`:
   ```json
-  "start": "PORT=5000 react-scripts start"
+  "start": "PORT=3000 react-scripts start"
   ```
 
 ### Building for Production
