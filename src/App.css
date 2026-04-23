@@ -50,7 +50,8 @@ body {
 
 .file-upload-btn,
 .clear-btn,
-.toggle-btn {
+.toggle-btn,
+.open-dir-btn {
   padding: 8px 16px;
   border: 1px solid #30363d;
   background-color: #21262d;
@@ -64,7 +65,8 @@ body {
 
 .file-upload-btn:hover,
 .clear-btn:hover,
-.toggle-btn:hover {
+.toggle-btn:hover,
+.open-dir-btn:hover {
   background-color: #30363d;
   border-color: #8b949e;
 }
@@ -84,6 +86,113 @@ body {
   flex: 1;
   overflow: hidden;
   gap: 0;
+}
+
+.sidebar {
+  width: 280px;
+  min-width: 200px;
+  max-width: 440px;
+  background-color: #0d1117;
+  border-right: 1px solid #30363d;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px;
+  background-color: #0d1117;
+  border-bottom: 1px solid #30363d;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.ft-root {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #c9d1d9;
+  user-select: none;
+}
+
+.ft-dir-row,
+.ft-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 4px;
+  margin: 1px 6px;
+  position: relative;
+}
+
+.ft-dir-row:hover,
+.ft-file:hover {
+  background-color: #161b22;
+}
+
+.ft-active {
+  background-color: #1f6feb33;
+  color: #e6edf3;
+  font-weight: 500;
+}
+
+.ft-active:hover {
+  background-color: #1f6feb44;
+}
+
+.ft-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: #8b949e;
+  font-size: 12px;
+  flex-shrink: 0;
+  transition: transform 0.12s ease;
+}
+
+.ft-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: #8b949e;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ft-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 15px;
+}
+
+.ft-children {
+  position: relative;
+}
+
+.ft-children::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 16px;
+  width: 1px;
+  background-color: #21262d;
 }
 
 .editor-section,
@@ -267,6 +376,14 @@ body {
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-width: none;
+    max-height: 220px;
+    border-right: none;
+    border-bottom: 1px solid #30363d;
   }
 
   .editor-section,

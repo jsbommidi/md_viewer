@@ -1,76 +1,108 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'github-markdown-css/github-markdown.css';
 import 'highlight.js/styles/github-dark.css';
 import './App.css';
+import { useFileSource, FileTree } from './FileSource';
 
-function App() {
-  const [markdown, setMarkdown] = useState(`# Welcome to md-viewer
+const WELCOME_MD = `# Welcome to md-viewer
 
 ## Getting Started
 
-This is a GitHub-styled markdown viewer built with React. Use **Show Editor** in the header to edit, or upload a markdown file.
+GitHub-styled markdown viewer. Open a folder, click any \`.md\` file in the tree, or upload a single file. Toggle the editor to edit.
 
 ### Features
 
-- GitHub-flavored markdown support
-- Beautiful GitHub styling
-- Syntax highlighting for code blocks
-- Full table support
-- Task lists
+- Open a directory (VSCode-style) and browse md files
+- Relative links and images resolved against the folder
+- GitHub-flavored markdown + syntax highlighting
 
-### Code Example
+### Try it
 
-\`\`\`javascript
-function hello() {
-  console.log('Hello, World!');
-}
-\`\`\`
+1. Click **Open Folder** to pick a directory
+2. Click any file in the sidebar
+`;
 
-### Table Example
+const NOOP_RESOLVE = () => null;
 
-| Feature | Status |
-|---------|--------|
-| Markdown | Supported |
-| Tables | Supported |
-| Code Highlighting | Supported |
+function App() {
+  const { root, pickDirectory, open } = useFileSource();
 
-### Blockquote
-
-> This is a blockquote. It supports multiple lines and **markdown formatting**.
-
-### Task List
-
-- [x] Setup React
-- [x] Add markdown parsing
-- [ ] Deploy to production
-
----
-
-Try uploading a markdown file or paste your own markdown content!
-  `);
+  const [activePath, setActivePath] = useState(null);
+  const [markdown, setMarkdown] = useState(WELCOME_MD);
+  const [resolveAsset, setResolveAsset] = useState(() => NOOP_RESOLVE);
   const [editorOpen, setEditorOpen] = useState(false);
+
+  useEffect(() => {
+    if (!activePath) return;
+    let cancelled = false;
+    open(activePath).then((doc) => {
+      if (cancelled) return;
+      setMarkdown(doc.text);
+      setResolveAsset(() => doc.resolveAsset);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [activePath, open]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setMarkdown(event.target.result);
-      };
-      reader.readAsText(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setActivePath(null);
+      setResolveAsset(() => NOOP_RESOLVE);
+      setMarkdown(event.target.result);
+    };
+    reader.readAsText(file);
   };
 
   const handleClear = () => {
+    setActivePath(null);
+    setResolveAsset(() => NOOP_RESOLVE);
     setMarkdown('');
   };
 
-  const toggleEditor = () => {
-    setEditorOpen(!editorOpen);
-  };
+  const toggleEditor = () => setEditorOpen((v) => !v);
+
+  const renderImg = useCallback(
+    ({ alt, src, ...props }) => {
+      const r = resolveAsset(src);
+      const finalSrc = typeof r === 'string' ? r : src;
+      return <img alt={alt} src={finalSrc} {...props} style={{ maxWidth: '100%' }} />;
+    },
+    [resolveAsset]
+  );
+
+  const renderAnchor = useCallback(
+    ({ href, children, ...props }) => {
+      const r = resolveAsset(href);
+      if (r && typeof r === 'object' && r.type === 'md') {
+        return (
+          <a
+            {...props}
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setActivePath(r.path);
+            }}
+          >
+            {children}
+          </a>
+        );
+      }
+      const finalHref = typeof r === 'string' ? r : href;
+      return (
+        <a {...props} href={finalHref}>
+          {children}
+        </a>
+      );
+    },
+    [resolveAsset]
+  );
 
   return (
     <div className="App">
@@ -80,6 +112,9 @@ Try uploading a markdown file or paste your own markdown content!
           <p>GitHub-styled markdown preview</p>
         </div>
         <div className="header-controls">
+          <button className="open-dir-btn" onClick={pickDirectory}>
+            Open Folder
+          </button>
           <label className="file-upload-btn">
             Upload File
             <input type="file" accept=".md,.txt" onChange={handleFileUpload} />
@@ -94,6 +129,13 @@ Try uploading a markdown file or paste your own markdown content!
       </header>
 
       <div className="container">
+        {root && (
+          <aside className="sidebar">
+            <div className="sidebar-header">{root.name || 'Explorer'}</div>
+            <FileTree node={root} activePath={activePath} onSelect={setActivePath} />
+          </aside>
+        )}
+
         {editorOpen && (
           <div className="editor-section">
             <h2>Editor</h2>
@@ -107,16 +149,12 @@ Try uploading a markdown file or paste your own markdown content!
         )}
 
         <div className={`preview-section ${!editorOpen ? 'fullwidth' : ''}`}>
-          <h2>Preview</h2>
+          <h2>{activePath ? activePath : 'Preview'}</h2>
           <div className="preview markdown-body">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight]}
-              components={{
-                img: ({ alt, src, ...props }) => (
-                  <img alt={alt} src={src} {...props} style={{ maxWidth: '100%' }} />
-                ),
-              }}
+              components={{ img: renderImg, a: renderAnchor }}
             >
               {markdown}
             </ReactMarkdown>
