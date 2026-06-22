@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>md-viewer</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.3.0/github-markdown-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --bg-panel: #161b22;
+            --border: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --active-bg: #238636;
+            --active-text: #ffffff;
+            --hover-bg: #21262d;
+            --header-bg: #010409;
+        }
+        
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #484f58; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6e7681; }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-title {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .header-title h1 { margin: 0; font-size: 1.2rem; }
+        .header-title span { color: var(--text-muted); font-size: 0.9rem; }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button, .btn-like {
+            background-color: var(--bg-panel);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-block;
+            text-align: center;
+            line-height: normal;
+        }
+        button:hover, .btn-like:hover { background-color: var(--hover-bg); }
+        input[type="file"] { display: none; }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--header-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .file-tree {
+            padding: 10px;
+            font-size: 0.9rem;
+            list-style: none;
+            margin: 0;
+        }
+        .ft-item {
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            word-break: break-all;
+        }
+        .ft-item:hover { background-color: var(--hover-bg); }
+        .ft-active { background-color: var(--active-bg); color: var(--active-text); }
+        .ft-icon { margin-right: 6px; font-size: 1.1em; width: 16px; text-align: center; }
+        .ft-dir > ul { list-style: none; padding-left: 15px; margin: 0; }
+        .ft-dir.closed > ul { display: none; }
+
+        /* Editor & Preview Panes */
+        .panes {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .editor-pane {
+            border-right: 1px solid var(--border);
+        }
+        .pane-header {
+            padding: 8px 15px;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+        }
+        textarea {
+            flex: 1;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            border: none;
+            padding: 20px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+        }
+        .preview-pane {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--bg-dark);
+        }
+        
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 250px; }
+            .panes { flex-direction: column; }
+            .editor-pane { border-right: none; border-bottom: 1px solid var(--border); height: 50%; flex: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <h1>md-viewer</h1>
+            <span>GitHub-styled markdown preview</span>
+        </div>
+        <div class="header-actions">
+            <label class="btn-like">
+                Open Folder
+                <input type="file" id="folderInput" webkitdirectory directory multiple>
+            </label>
+            <label class="btn-like">
+                Upload File
+                <input type="file" id="fileInput" accept=".md,.markdown,.txt">
+            </label>
+            <button id="saveBtn">Save File</button>
+            <button id="toggleEditorBtn">Show Editor</button>
+            <button id="clearBtn">Clear</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header" id="rootFolderName">No Folder Opened</div>
+            <div class="file-tree" id="fileTree"></div>
+        </aside>
+
+        <div class="panes">
+            <div class="pane editor-pane hidden" id="editorContainer">
+                <div class="pane-header"><span>Editor</span></div>
+                <textarea id="editor" placeholder="Type markdown here... or open a folder/file."></textarea>
+            </div>
+            <div class="pane" id="previewContainer">
+                <div class="pane-header"><span>Preview</span></div>
+                <div class="preview-pane markdown-body" id="preview"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        // State
+        let filesMap = new Map(); // path -> File object
+        let blobCache = new Map(); // path -> blob URL
+        let activeFilePath = null;
+        let isEditorVisible = false;
+
+        // DOM Elements
+        const folderInput = document.getElementById('folderInput');
+        const fileInput = document.getElementById('fileInput');
+        const rootFolderName = document.getElementById('rootFolderName');
+        const fileTreeEl = document.getElementById('fileTree');
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const editorContainer = document.getElementById('editorContainer');
+        const saveBtn = document.getElementById('saveBtn');
+        const toggleEditorBtn = document.getElementById('toggleEditorBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // Marked Configuration
+        const renderer = new marked.Renderer();
+
+        // Custom Image Renderer for relative paths
+        renderer.image = function (href, title, text) {
+            let src = href;
+            // Resolve relative paths if we have an active file context
+            if (activeFilePath && filesMap.size > 0 && !href.startsWith('http') && !href.startsWith('data:') && !href.startsWith('blob:')) {
+                // Decode URI component in case filename has spaces
+                const decodedHref = decodeURIComponent(href);
+                const resolvedPath = resolvePath(activeFilePath, decodedHref);
+                if (filesMap.has(resolvedPath)) {
+                    if (!blobCache.has(resolvedPath)) {
+                        const blobUrl = URL.createObjectURL(filesMap.get(resolvedPath));
+                        blobCache.set(resolvedPath, blobUrl);
+                    }
+                    src = blobCache.get(resolvedPath);
+                }
+            }
+            let out = `<img src="${src}" alt="${text}"`;
+            if (title) { out += ` title="${title}"`; }
+            out += '>';
+            return out;
+        };
+
+        // Custom Link Renderer for internal navigation
+        renderer.link = function(href, title, text) {
+            let out = `<a href="${href}"`;
+            if (title) { out += ` title="${title}"`; }
+            
+            // Check if it's a relative link to another markdown file
+            if (activeFilePath && filesMap.size > 0 && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:')) {
+                const decodedHref = decodeURIComponent(href);
+                const resolvedPath = resolvePath(activeFilePath, decodedHref);
+                if (filesMap.has(resolvedPath) && (resolvedPath.endsWith('.md') || resolvedPath.endsWith('.markdown'))) {
+                    out += ` class="internal-link" data-path="${resolvedPath}"`;
+                }
+            } else if (href.startsWith('http')) {
+                out += ` target="_blank" rel="noopener noreferrer"`;
+            }
+            
+            out += `>${text}</a>`;
+            return out;
+        };
+
+        marked.setOptions({
+            renderer: renderer,
+            gfm: true,
+            breaks: false,
+            pedantic: false,
+            sanitize: false,
+            smartLists: true,
+            smartypants: false
+        });
+
+        // Event Listeners
+        folderInput.addEventListener('change', handleFolderSelect);
+        fileInput.addEventListener('change', handleSingleFileUpload);
+        editor.addEventListener('input', updatePreview);
+        
+        // Editor shortcuts
+        editor.addEventListener('keydown', function(e) {
+            // Tab to insert spaces
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                // Use execCommand to preserve the browser's native undo stack
+                if (!document.execCommand('insertText', false, '  ')) {
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 2;
+                }
+                updatePreview();
+            }
+        });
+
+        toggleEditorBtn.addEventListener('click', () => {
+            isEditorVisible = !isEditorVisible;
+            if (isEditorVisible) {
+                editorContainer.classList.remove('hidden');
+                toggleEditorBtn.textContent = 'Hide Editor';
+            } else {
+                editorContainer.classList.add('hidden');
+                toggleEditorBtn.textContent = 'Show Editor';
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            editor.value = '';
+            filesMap.clear();
+            blobCache.forEach(url => URL.revokeObjectURL(url));
+            blobCache.clear();
+            activeFilePath = null;
+            rootFolderName.textContent = 'No Folder Opened';
+            fileTreeEl.innerHTML = '';
+            updatePreview();
+            folderInput.value = '';
+            fileInput.value = '';
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            if (!editor.value && !activeFilePath) return;
+            
+            const content = editor.value;
+            const defaultName = activeFilePath ? activeFilePath.split('/').pop() : 'untitled.md';
+
+            // Update internal cache so switching files doesn't lose changes
+            if (activeFilePath) {
+                const oldFile = filesMap.get(activeFilePath);
+                if (oldFile) {
+                    const newFile = new File([content], oldFile.name, { type: oldFile.type, lastModified: Date.now() });
+                    filesMap.set(activeFilePath, newFile);
+                }
+            }
+
+            // Save to disk
+            try {
+                if (window.showSaveFilePicker) {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: defaultName,
+                        types: [{
+                            description: 'Markdown File',
+                            accept: {'text/markdown': ['.md', '.markdown']},
+                        }],
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(content);
+                    await writable.close();
+                } else {
+                    const blob = new Blob([content], { type: 'text/markdown' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = defaultName;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Failed to save file', err);
+                    alert('Failed to save file.');
+                }
+            }
+        });
+
+        // Intercept internal links
+        preview.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && e.target.classList.contains('internal-link')) {
+                e.preventDefault();
+                const path = e.target.getAttribute('data-path');
+                if (path) {
+                    loadMarkdownFile(path);
+                }
+            }
+        });
+
+        function updatePreview() {
+            const md = editor.value;
+            const html = marked.parse(md);
+            preview.innerHTML = html;
+            
+            // Apply syntax highlighting
+            preview.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+            
+            // Task list styling compatibility for github-markdown-css
+            preview.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                checkbox.disabled = true;
+                if (checkbox.parentElement.tagName === 'LI') {
+                    checkbox.parentElement.classList.add('task-list-item');
+                    if (checkbox.parentElement.parentElement) {
+                        checkbox.parentElement.parentElement.classList.add('contains-task-list');
+                    }
+                }
+            });
+        }
+
+        async function handleFolderSelect(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            filesMap.clear();
+            blobCache.forEach(url => URL.revokeObjectURL(url));
+            blobCache.clear();
+
+            let rootName = files[0].webkitRelativePath.split('/')[0];
+            rootFolderName.textContent = rootName || 'Selected Folder';
+
+            // Build map
+            files.forEach(file => {
+                // Remove root folder from path for internal paths
+                const pathParts = file.webkitRelativePath.split('/');
+                pathParts.shift(); // remove root
+                const internalPath = pathParts.join('/');
+                if (internalPath) {
+                    filesMap.set(internalPath, file);
+                }
+            });
+
+            renderFileTree();
+        }
+
+        async function handleSingleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const text = await file.text();
+            editor.value = text;
+            activeFilePath = null;
+            rootFolderName.textContent = file.name;
+            fileTreeEl.innerHTML = '';
+            updatePreview();
+            fileInput.value = '';
+        }
+
+        function renderFileTree() {
+            // Build tree structure
+            const tree = {};
+            filesMap.forEach((file, path) => {
+                const parts = path.split('/');
+                let current = tree;
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i];
+                    if (!current[part]) {
+                        current[part] = (i === parts.length - 1) ? file : {};
+                    }
+                    current = current[part];
+                }
+            });
+
+            fileTreeEl.innerHTML = '';
+            fileTreeEl.appendChild(createTreeDOM(tree, ''));
+            
+            // Try to find README.md and load it automatically
+            const readmePath = Array.from(filesMap.keys()).find(p => p.toLowerCase() === 'readme.md');
+            if (readmePath) {
+                loadMarkdownFile(readmePath);
+            } else {
+                // Or load the first markdown file
+                const firstMdPath = Array.from(filesMap.keys()).find(p => p.endsWith('.md') || p.endsWith('.markdown'));
+                if (firstMdPath) loadMarkdownFile(firstMdPath);
+            }
+        }
+
+        function createTreeDOM(treeNode, currentPath) {
+            const ul = document.createElement('ul');
+            if (!currentPath) {
+                ul.style.paddingLeft = '0';
+            }
+            
+            // Sort: directories first, then files alphabetically
+            const keys = Object.keys(treeNode).sort((a, b) => {
+                const isDirA = !(treeNode[a] instanceof File);
+                const isDirB = !(treeNode[b] instanceof File);
+                if (isDirA && !isDirB) return -1;
+                if (!isDirA && isDirB) return 1;
+                return a.localeCompare(b);
+            });
+
+            keys.forEach(key => {
+                const item = treeNode[key];
+                const isDir = !(item instanceof File);
+                const fullPath = currentPath ? `${currentPath}/${key}` : key;
+                
+                // Hide non-markdown files in the tree
+                if (!isDir && !key.endsWith('.md') && !key.endsWith('.markdown')) {
+                    return; 
+                }
+
+                const li = document.createElement('li');
+                const div = document.createElement('div');
+                div.className = 'ft-item';
+                div.dataset.path = fullPath;
+                
+                const icon = document.createElement('span');
+                icon.className = 'ft-icon';
+                
+                if (isDir) {
+                    li.className = 'ft-dir';
+                    icon.textContent = '📁';
+                    const arrow = document.createElement('span');
+                    arrow.innerHTML = '▾&nbsp;';
+                    arrow.style.width = '15px';
+                    arrow.style.display = 'inline-block';
+                    
+                    div.appendChild(arrow);
+                    div.appendChild(icon);
+                    div.appendChild(document.createTextNode(key));
+                    
+                    const children = createTreeDOM(item, fullPath);
+                    li.appendChild(div);
+                    li.appendChild(children);
+                    
+                    div.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        li.classList.toggle('closed');
+                        arrow.innerHTML = li.classList.contains('closed') ? '▸&nbsp;' : '▾&nbsp;';
+                    });
+                } else {
+                    icon.textContent = '📄';
+                    // Match indentation for files not in dirs so they align
+                    const spacer = document.createElement('span');
+                    spacer.style.width = '15px';
+                    spacer.style.display = 'inline-block';
+                    
+                    div.appendChild(spacer);
+                    div.appendChild(icon);
+                    div.appendChild(document.createTextNode(key));
+                    li.appendChild(div);
+                    
+                    div.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        loadMarkdownFile(fullPath);
+                    });
+                }
+                
+                ul.appendChild(li);
+            });
+            
+            return ul;
+        }
+
+        async function loadMarkdownFile(path) {
+            const file = filesMap.get(path);
+            if (!file) return;
+            
+            const text = await file.text();
+            activeFilePath = path;
+            editor.value = text;
+            
+            // Update active state in tree
+            document.querySelectorAll('.ft-item').forEach(el => el.classList.remove('ft-active'));
+            const activeEl = document.querySelector(`.ft-item[data-path="${path.replace(/"/g, '\\"')}"]`);
+            if (activeEl) activeEl.classList.add('ft-active');
+            
+            updatePreview();
+        }
+
+        // Helper to resolve relative paths
+        function resolvePath(basePath, relativePath) {
+            if (!relativePath.startsWith('.')) return relativePath;
+            
+            const baseParts = basePath.split('/');
+            baseParts.pop(); // remove current filename
+            
+            const relParts = relativePath.split('/');
+            for (const part of relParts) {
+                if (part === '.') continue;
+                if (part === '..') {
+                    if (baseParts.length > 0) baseParts.pop();
+                } else {
+                    baseParts.push(part);
+                }
+            }
+            return baseParts.join('/');
+        }
+        
+        // Initial render (empty state)
+        updatePreview();
+    </script>
+</body>
+</html>
